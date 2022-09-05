@@ -1,18 +1,23 @@
 {
-    "name": "Mnist_LeNet",
-    "n_gpu": 1,
+    "name": "CelebA_VAE",
+    "n_gpu": 0,
 
     "arch": {
-        "type": "MnistModel",
-        "args": {}
+        "type": "VariationalAutoencoder",
+        "args": {
+            "nc": 3,
+            "ndf": 64,
+            "ngf": 64,
+            "latent_dims":500
+        }
     },
     "data_loader": {
-        "type": "MnistDataLoader",
+        "type": "CelebDataLoader",
         "args":{
             "data_dir": "data/",
-            "batch_size": 128,
+            "batch_size": 64,
             "shuffle": true,
-            "validation_split": 0.1,
+            "validation_split": 0.2,
             "num_workers": 2
         }
     },
@@ -24,10 +29,8 @@
             "amsgrad": true
         }
     },
-    "loss": "nll_loss",
-    "metrics": [
-        "accuracy", "top_k_acc"
-    ],
+    "loss": "elbo_loss",
+    "metrics": [],
     "lr_scheduler": {
         "type": "StepLR",
         "args": {
@@ -36,7 +39,7 @@
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 10,
 
         "save_dir": "saved/",
         "save_period": 1,
