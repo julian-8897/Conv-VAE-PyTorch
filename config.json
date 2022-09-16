@@ -1,36 +1,32 @@
 {
-    "name": "CelebA_VAE",
+    "name": "VAE_CelebA",
     "n_gpu": 0,
-
     "arch": {
-        "type": "VariationalAutoencoder",
+        "type": "VanillaVAE",
         "args": {
-            "nc": 3,
-            "ndf": 64,
-            "ngf": 64,
-            "latent_dims":500
+            "in_channels": 3,
+            "latent_dims": 128
         }
     },
     "data_loader": {
         "type": "CelebDataLoader",
-        "args":{
+        "args": {
             "data_dir": "data/",
             "batch_size": 64,
             "shuffle": true,
-            "validation_split": 0.2,
+            "validation_split": 0.99,
             "num_workers": 2
         }
     },
     "optimizer": {
         "type": "Adam",
-        "args":{
+        "args": {
             "lr": 0.001,
             "weight_decay": 0,
             "amsgrad": true
         }
     },
     "loss": "elbo_loss",
-    "metrics": [],
     "lr_scheduler": {
         "type": "StepLR",
         "args": {
@@ -39,15 +35,12 @@
         }
     },
     "trainer": {
-        "epochs": 10,
-
+        "epochs": 1,
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
-        
         "monitor": "min val_loss",
         "early_stop": 10,
-
         "tensorboard": true
     }
 }
