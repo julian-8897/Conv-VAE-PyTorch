@@ -48,3 +48,16 @@ To test the model, you can run the following:
 ```
 python test.py --resume path/to/checkpoint
 ```
+
+---
+
+<h2 align="center">
+  <b>Results</b><br>
+</h2>
+
+| Reconstructed Samples | Generated Samples |
+| --------------------- | ----------------- |
+| ![][1]                | ![][2]            |
+
+[1]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Reconstructions/recons_epoch_10.png
+[2]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Samples/generated_samples_epoch_10.png
