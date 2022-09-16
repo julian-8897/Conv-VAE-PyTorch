@@ -14,7 +14,7 @@
 
 ## Description of Project
 
-Vanilla Variational Autoencoder (VAE) implemented in PyTorch using convolutional/transposed convolutional in the encoder/decoder architecture.
+Vanilla Variational Autoencoder (VAE) implemented in PyTorch using convolutional/transposed convolutional layers as the encoder/decoder architecture.
 
 The model was trained on the CelebA dataset, which can be downloaded as a zip file from https://s3-us-west-1.amazonaws.com/udacity-dlnfd/datasets/celeba.zip.
 
