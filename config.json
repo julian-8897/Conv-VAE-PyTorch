@@ -14,7 +14,7 @@
             "data_dir": "data/",
             "batch_size": 64,
             "shuffle": true,
-            "validation_split": 0.99,
+            "validation_split": 0.2,
             "num_workers": 2
         }
     },
@@ -27,6 +27,7 @@
         }
     },
     "loss": "elbo_loss",
+    "metrics": [],
     "lr_scheduler": {
         "type": "StepLR",
         "args": {

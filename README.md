@@ -61,3 +61,14 @@ python test.py --resume path/to/checkpoint
 
 [1]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Reconstructions/recons_epoch_10.png
 [2]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Samples/generated_samples_epoch_10.png
+
+## References
+
+- Original VAE paper "Auto-Encoding Variational Bayes" by Kingma & Welling:
+  https://arxiv.org/abs/1312.6114
+
+- Various implementations of VAEs in PyTorch:
+  https://github.com/AntixK/PyTorch-VAE
+
+- PyTorch template used in this project:
+  https://github.com/victoresque/pytorch-template

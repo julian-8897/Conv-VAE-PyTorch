@@ -51,10 +51,8 @@ class Trainer(BaseTrainer):
             data, target = data.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
-            # output = self.model(data)
             output, mu, logvar = self.model(data)
             loss = self.criterion(output, data, mu, logvar)
-            # loss = self.criterion(output, target)
             loss.backward()
             self.optimizer.step()
 
@@ -97,9 +95,6 @@ class Trainer(BaseTrainer):
                 data, target = data.to(self.device), target.to(self.device)
 
                 output, mu, logvar = self.model(data)
-                # output = self.model(data)
-                # loss = self.criterion(output, target)
-
                 loss = self.criterion(output, data, mu, logvar)
 
                 self.writer.set_step(
