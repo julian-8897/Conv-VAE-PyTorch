@@ -72,3 +72,6 @@ python test.py --resume path/to/checkpoint
 
 - PyTorch template used in this project:
   https://github.com/victoresque/pytorch-template
+
+- A comprehensive introduction to VAEs:
+  https://arxiv.org/pdf/1906.02691.pdf
