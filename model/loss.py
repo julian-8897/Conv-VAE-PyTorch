@@ -3,7 +3,7 @@ from torch import nn
 import torch
 
 
-def elbo_loss(recon_x, x, mu, logvar):
+def elbo_loss(recon_x, x, mu, logvar, log_det=None):
     """
     Loss function for VAE:
     reconstruction term + regularization term
@@ -17,10 +17,8 @@ def elbo_loss(recon_x, x, mu, logvar):
     KLD_element = mu.pow(2).add_(logvar.exp()).mul_(-1).add_(1).add_(logvar)
     KLD = torch.sum(KLD_element).mul_(-0.5)
 
-    # if log_det is not None:
-    #     return (MSE + KLD - log_det).mean()
+    if log_det is not None:
+        return (MSE + KLD - log_det).mean()
 
-    # else:
-    #     return MSE + KLD
-
-    return MSE + KLD
+    else:
+        return MSE + KLD

@@ -44,7 +44,7 @@ class PlanarFlow(nn.Module):
         psi = h_prime(activation) * self.w
         log_det = torch.log(torch.abs(1. + (u * psi).sum(dim=1, keepdim=True)))
 
-        return x
+        return x, log_det
 
 
 class Flow(nn.Module):
@@ -200,8 +200,8 @@ class VanillaVAE(BaseModel):
         mu, log_var = self.encode(input)
 
         if self.flow is not None:
-            z = self.reparameterize(mu, log_var)
-            return self.decode(z), mu, log_var
+            z, log_det = self.reparameterize(mu, log_var)
+            return self.decode(z), mu, log_var, log_det
         else:
             z = self.reparameterize(mu, log_var)
             return self.decode(z), mu, log_var
