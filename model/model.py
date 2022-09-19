@@ -1,8 +1,85 @@
+from msilib.schema import Class
+from xmlrpc.client import Boolean
 import torch
 from base import BaseModel
 from torch import nn
 from torch.nn import functional as F
 from .types_ import *
+
+
+class PlanarFlow(nn.Module):
+    def __init__(self, dim):
+        """Instantiates one step of planar flow.
+        Reference:
+        Variational Inference with Normalizing Flows
+        Danilo Jimenez Rezende, Shakir Mohamed
+        (https://arxiv.org/abs/1505.05770)
+        Args:
+            dim: input dimensionality.
+        """
+        super(PlanarFlow, self).__init__()
+
+        self.u = nn.Parameter(torch.randn(1, dim))
+        self.w = nn.Parameter(torch.randn(1, dim))
+        self.b = nn.Parameter(torch.randn(1))
+
+    def forward(self, x):
+        """Forward pass.
+        Args:
+            x: input tensor (B x D).
+        Returns:
+            transformed x and log-determinant of Jacobian.
+        """
+        def m(x):
+            return F.softplus(x) - 1.
+
+        def h(x):
+            return torch.tanh(x)
+
+        def h_prime(x):
+            return 1. - h(x)**2
+
+        inner = (self.w * self.u).sum()
+        u = self.u + (m(inner) - inner) * self.w / self.w.norm()**2
+        activation = (self.w * x).sum(dim=1, keepdim=True) + self.b
+        x = x + u * h(activation)
+        psi = h_prime(activation) * self.w
+        log_det = torch.log(torch.abs(1. + (u * psi).sum(dim=1, keepdim=True)))
+
+        return x, log_det
+
+
+class Flow(nn.Module):
+    def __init__(self, dim, type, length):
+        """Instantiates a chain of flows.
+        Args:
+            dim: input dimensionality.
+            type: type of flow.
+            length: length of flow.
+        """
+        super(Flow, self).__init__()
+
+        if type == 'planar':
+            self.flow = nn.ModuleList([PlanarFlow(dim) for _ in range(length)])
+
+    def forward(self, x):
+        """Forward pass.
+        Args:
+            x: input tensor (B x D).
+        Returns:
+            transformed x and log-determinant of Jacobian.
+        """
+        [B, _] = list(x.size())
+        if torch.cuda.is_available():
+            log_det = torch.zeros(B, 1).cuda()
+        else:
+            log_det = torch.zeros(B, 1)
+
+        for i in range(len(self.flow)):
+            x, inc = self.flow[i](x)
+            log_det = log_det + inc
+
+        return x, log_det
 
 
 class VanillaVAE(BaseModel):
@@ -11,9 +88,15 @@ class VanillaVAE(BaseModel):
                  in_channels: int,
                  latent_dims: int,
                  hidden_dims: List = None,
+                 flow=None,
+                 length=None,
                  **kwargs) -> None:
         super(VanillaVAE, self).__init__()
         self.latent_dim = latent_dims
+
+        if flow is not None:
+            self.length = length
+            self.flow = Flow(latent_dims, flow, length)
 
         modules = []
         if hidden_dims is None:
@@ -108,12 +191,22 @@ class VanillaVAE(BaseModel):
         """
         std = torch.exp(0.5 * logvar)
         eps = torch.randn_like(std)
-        return eps * std + mu
+        z = eps.mul(std).add_(mu)
+
+        if self.flow is not None:
+            return self.flow(z)
+        else:
+            return z
 
     def forward(self, input: Tensor, **kwargs) -> List[Tensor]:
         mu, log_var = self.encode(input)
-        z = self.reparameterize(mu, log_var)
-        return self.decode(z), mu, log_var
+
+        if self.flow is not None:
+            z, log_det = self.reparameterize(mu, log_var)
+            return self.decode(z), mu, log_var, log_det
+        else:
+            z = self.reparameterize(mu, log_var)
+            return self.decode(z), mu, log_var
 
     def sample(self,
                num_samples: int,

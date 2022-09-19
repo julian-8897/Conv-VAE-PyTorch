@@ -1,4 +1,5 @@
 import argparse
+import numpy as np
 import torch
 from tqdm import tqdm
 import data_loader.data_loaders as module_data
@@ -7,7 +8,13 @@ import model.metric as module_metric
 import model.model as module_arch
 from parse_config import ConfigParser
 import torchvision.utils as vutils
+from torchvision import transforms
+from torch.autograd import Variable
 import os
+
+import pathlib
+temp = pathlib.PosixPath
+pathlib.PosixPath = pathlib.WindowsPath
 
 
 def main(config):
@@ -32,7 +39,10 @@ def main(config):
     # metric_fns = [getattr(module_metric, met) for met in config['metrics']]
 
     logger.info('Loading checkpoint: {} ...'.format(config.resume))
-    checkpoint = torch.load(config.resume)
+    # checkpoint = torch.load(config.resume)
+
+    # loading on CPU-only machine
+    checkpoint = torch.load(config.resume, map_location=torch.device('cpu'))
     state_dict = checkpoint['state_dict']
     if config['n_gpu'] > 1:
         model = torch.nn.DataParallel(model)
@@ -49,10 +59,13 @@ def main(config):
     with torch.no_grad():
         for i, (data, target) in enumerate(tqdm(data_loader)):
             data, target = data.to(device), target.to(device)
-            output, mu, logvar = model(data)
+            # output, mu, logvar = model(data)
+
+            output, mu, logvar, log_det = model(data)
+            loss = loss_fn(output, data, mu, logvar, log_det=log_det)
 
             # computing loss, metrics on test set
-            loss = loss_fn(output, data, mu, logvar)
+            # loss = loss_fn(output, data, mu, logvar)
             batch_size = data.shape[0]
             total_loss += loss.item() * batch_size
         #     for i, metric in enumerate(metric_fns):
@@ -62,6 +75,7 @@ def main(config):
         test_input, test_label = next(iter(data_loader))
         test_input = test_input.to(device)
         test_label = test_label.to(device)
+
         recons = model.generate(test_input, labels=test_label)
         vutils.save_image(recons.data,
                           os.path.join(

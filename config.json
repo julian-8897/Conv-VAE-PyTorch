@@ -5,7 +5,9 @@
         "type": "VanillaVAE",
         "args": {
             "in_channels": 3,
-            "latent_dims": 128
+            "latent_dims": 128,
+            "flow": "planar",
+            "length": 8
         }
     },
     "data_loader": {
