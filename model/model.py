@@ -1,5 +1,3 @@
-from msilib.schema import Class
-from xmlrpc.client import Boolean
 import torch
 from base import BaseModel
 from torch import nn
@@ -46,7 +44,7 @@ class PlanarFlow(nn.Module):
         psi = h_prime(activation) * self.w
         log_det = torch.log(torch.abs(1. + (u * psi).sum(dim=1, keepdim=True)))
 
-        return x, log_det
+        return x
 
 
 class Flow(nn.Module):
@@ -202,8 +200,8 @@ class VanillaVAE(BaseModel):
         mu, log_var = self.encode(input)
 
         if self.flow is not None:
-            z, log_det = self.reparameterize(mu, log_var)
-            return self.decode(z), mu, log_var, log_det
+            z = self.reparameterize(mu, log_var)
+            return self.decode(z), mu, log_var
         else:
             z = self.reparameterize(mu, log_var)
             return self.decode(z), mu, log_var
