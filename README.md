@@ -57,12 +57,12 @@ python test.py --resume path/to/checkpoint
   <b>Results</b><br>
 </h2>
 
-| 128 Latent Dimensions
+| 128 Latent Dimensions |
 | Reconstructed Samples | Generated Samples |
 | --------------------- | ----------------- |
 | ![][1] | ![][2] |
 
-| 256 Latent Dimensions
+| 256 Latent Dimensions |
 | Reconstructed Samples | Generated Samples |
 | --------------------- | ----------------- |
 | ![][3] | ![][4] |
