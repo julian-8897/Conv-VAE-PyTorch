@@ -12,10 +12,6 @@ from torchvision import transforms
 from torch.autograd import Variable
 import os
 
-import pathlib
-temp = pathlib.PosixPath
-pathlib.PosixPath = pathlib.WindowsPath
-
 
 def main(config):
     logger = config.get_logger('test')

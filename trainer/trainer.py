@@ -57,6 +57,8 @@ class Trainer(BaseTrainer):
             output, mu, logvar, log_det = self.model(data)
             loss = self.criterion(output, data, mu, logvar, log_det=log_det)
             loss.backward()
+            # optional gradient clipping
+            # torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=2.0, norm_type=2
             self.optimizer.step()
 
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)

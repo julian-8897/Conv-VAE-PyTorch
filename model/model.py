@@ -85,10 +85,20 @@ class VanillaVAE(BaseModel):
     def __init__(self,
                  in_channels: int,
                  latent_dims: int,
-                 hidden_dims: List = None,
-                 flow=None,
-                 length=None,
+                 hidden_dims: List[int] = None,
+                 flow: str = None,
+                 length: int = None,
                  **kwargs) -> None:
+        """Instantiates the VAE model
+        Args:
+            in_channels (int): Number of input channels
+            latent_dims (int): Size of latent dimensions
+            hidden_dims (List[int]): List of hidden dimensions
+
+        Optional Args:
+            flow (str): Type of normalizing flow model
+            length (int): Length of flow
+        """
         super(VanillaVAE, self).__init__()
         self.latent_dim = latent_dims
 
@@ -151,11 +161,16 @@ class VanillaVAE(BaseModel):
 
     def encode(self, input: Tensor) -> List[Tensor]:
         """
-        Encodes the input by passing through the encoder network
-        and returns the latent codes.
-        :param input: (Tensor) Input tensor to encoder [N x C x H x W]
-        :return: (Tensor) List of latent codes
+        Encodes the input by passing through the convolutional network
+        and outputs the latent variables.
+
+        Args:
+            input (Tensor): Input tensor [N x C x H x W]
+
+        Returns:
+            mu (Tensor) and log_var (Tensor) of latent variables
         """
+
         result = self.encoder(input)
         result = torch.flatten(result, start_dim=1)
 
@@ -168,10 +183,14 @@ class VanillaVAE(BaseModel):
 
     def decode(self, z: Tensor) -> Tensor:
         """
-        Maps the given latent codes
+        Maps the given latent variables
         onto the image space.
-        :param z: (Tensor) [B x D]
-        :return: (Tensor) [B x C x H x W]
+
+        Args:
+            z (Tensor) : Latent variable [B x D]
+
+        Returns:
+            result (Tensor) [B x C x H x W]
         """
         result = self.decoder_input(z)
         result = result.view(-1, 512, 2, 2)

@@ -1,5 +1,5 @@
 <h1 align="center">
-  <b>Image Generation and Reconstruction with Variational Autoencoder (VAE) in PyTorch</b><br>
+  <b>Image Generation and Reconstruction with Convolutional Variational Autoencoder (VAE) in PyTorch</b><br>
 </h1>
 
 <p align="center">
@@ -12,11 +12,13 @@
          
 </p>
 
-## Description of Project
+## Implementation Details
 
-Vanilla Variational Autoencoder (VAE) implemented in PyTorch using convolutional/transposed convolutional layers as the encoder/decoder architecture.
+A PyTorch implementation of the standard Variational Autoencoder (VAE). The amortized inference model (encoder) is parameterized by a convolutional network, while the generative model (decoder) is parameterized by a transposed convolutional network. The choice of the approximate posterior is the usual multivariate Gaussian distribution with diagonal covariance.
 
-The model was trained on the CelebA dataset, which can be downloaded as a zip file from https://s3-us-west-1.amazonaws.com/udacity-dlnfd/datasets/celeba.zip.
+This implementation supports model training on the [CelebA dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html). For ease of access, the zip file which contains the dataset can be downloaded from: https://s3-us-west-1.amazonaws.com/udacity-dlnfd/datasets/celeba.zip.
+
+The VAE model was evaluated on several downstream tasks, such as image reconstruction and image generation. Some sample results can be found in the [Results](https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/README.md#--Results) section.
 
 ## Requirements
 
@@ -64,14 +66,14 @@ python test.py --resume path/to/checkpoint
 
 ## References
 
-- Original VAE paper "Auto-Encoding Variational Bayes" by Kingma & Welling:
-  https://arxiv.org/abs/1312.6114
+1. Original VAE paper "Auto-Encoding Variational Bayes" by Kingma & Welling:
+   https://arxiv.org/abs/1312.6114
 
-- Various implementations of VAEs in PyTorch:
-  https://github.com/AntixK/PyTorch-VAE
+2. Various implementations of VAEs in PyTorch:
+   https://github.com/AntixK/PyTorch-VAE
 
-- PyTorch template used in this project:
-  https://github.com/victoresque/pytorch-template
+3. PyTorch template used in this project:
+   https://github.com/victoresque/pytorch-template
 
-- A comprehensive introduction to VAEs:
-  https://arxiv.org/pdf/1906.02691.pdf
+4. A comprehensive introduction to VAEs:
+   https://arxiv.org/pdf/1906.02691.pdf
