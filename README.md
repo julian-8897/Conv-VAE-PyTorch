@@ -61,8 +61,8 @@ python test.py --resume path/to/checkpoint
 | --------------------- | ----------------- |
 | ![][1]                | ![][2]            |
 
-[1]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Reconstructions/recons_epoch_10.png
-[2]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Samples/generated_samples_epoch_10.png
+[1]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Reconstructions/recons_epoch_20.png
+[2]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Samples/generated_samples_epoch_20.png
 
 ## References
 
