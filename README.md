@@ -16,7 +16,7 @@
 
 A PyTorch implementation of the standard Variational Autoencoder (VAE). The amortized inference model (encoder) is parameterized by a convolutional network, while the generative model (decoder) is parameterized by a transposed convolutional network. The choice of the approximate posterior is the usual multivariate Gaussian distribution with diagonal covariance.
 
-This implementation supports model training on the [CelebA dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html). For ease of access, the zip file which contains the dataset can be downloaded from: https://s3-us-west-1.amazonaws.com/udacity-dlnfd/datasets/celeba.zip.
+This implementation supports model training on the [CelebA dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html). This project serves as a proof of concept, hence the original images (178 x 218) are scaled and cropped to (64 x 64) images in order to speed up the training process. For ease of access, the zip file which contains the dataset can be downloaded from: https://s3-us-west-1.amazonaws.com/udacity-dlnfd/datasets/celeba.zip.
 
 The VAE model was evaluated on several downstream tasks, such as image reconstruction and image generation. Some sample results can be found in the [Results](https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/README.md#--Results) section.
 
@@ -28,7 +28,7 @@ The VAE model was evaluated on several downstream tasks, such as image reconstru
 ## Installation Guide
 
 ```
-$ git clone https://github.com/julian-8897/Vanilla-VAE-PyTorch.git
+$ git clone https://github.com/julian-8897/Conv-VAE-PyTorch.git
 $ cd Vanilla-VAE-PyTorch
 $ pip install -r requirements.txt
 ```
@@ -37,19 +37,29 @@ $ pip install -r requirements.txt
 
 ### Training
 
-To train the model, please modify the 'config.json' configurations file, and run:
+To train the model, please modify the `config.json` configuration file, and run:
 
 ```
 python train.py --config config.json
 ```
 
+### Resuming Training
+
+To resume training of the model from a checkpoint, you can run the following command:
+
+```
+python train.py --resume path/to/checkpoint
+```
+
 ### Testing
 
-To test the model, you can run the following:
+To test the model, you can run the following command:
 
 ```
 python test.py --resume path/to/checkpoint
 ```
+
+Generated plots are stored in the 'Reconstructions' and 'Samples' folders.
 
 ---
 
