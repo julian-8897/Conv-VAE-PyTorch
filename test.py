@@ -55,13 +55,10 @@ def main(config):
     with torch.no_grad():
         for i, (data, target) in enumerate(tqdm(data_loader)):
             data, target = data.to(device), target.to(device)
-            # output, mu, logvar = model(data)
-
-            output, mu, logvar, log_det = model(data)
-            loss = loss_fn(output, data, mu, logvar, log_det=log_det)
+            output, mu, logvar = model(data)
 
             # computing loss, metrics on test set
-            # loss = loss_fn(output, data, mu, logvar)
+            loss = loss_fn(output, data, mu, logvar)
             batch_size = data.shape[0]
             total_loss += loss.item() * batch_size
         #     for i, metric in enumerate(metric_fns):
