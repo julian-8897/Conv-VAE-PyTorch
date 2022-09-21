@@ -51,16 +51,14 @@ class Trainer(BaseTrainer):
             data, target = data.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
-            # output, mu, logvar = self.model(data)
-            # loss = self.criterion(output, data, mu, logvar)
-
-            output, mu, logvar, log_det = self.model(data)
-            loss = self.criterion(output, data, mu, logvar, log_det=log_det)
+            output, mu, logvar = self.model(data)
+            loss = self.criterion(output, data, mu, logvar)
             loss.backward()
-            # optional gradient clipping
-            # torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=2.0, norm_type=2
-            self.optimizer.step()
 
+            # optional gradient clipping
+            # torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=2.0, norm_type=2)
+
+            self.optimizer.step()
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
             self.train_metrics.update('loss', loss.item())
             # for met in self.metric_ftns:
@@ -98,13 +96,8 @@ class Trainer(BaseTrainer):
         with torch.no_grad():
             for batch_idx, (data, target) in enumerate(self.valid_data_loader):
                 data, target = data.to(self.device), target.to(self.device)
-
-                # output, mu, logvar = self.model(data)
-                # loss = self.criterion(output, data, mu, logvar)
-
-                output, mu, logvar, log_det = self.model(data)
-                loss = self.criterion(
-                    output, data, mu, logvar, log_det=log_det)
+                output, mu, logvar = self.model(data)
+                loss = self.criterion(output, data, mu, logvar)
 
                 self.writer.set_step(
                     (epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
