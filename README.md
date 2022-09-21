@@ -57,15 +57,17 @@ python test.py --resume path/to/checkpoint
   <b>Results</b><br>
 </h2>
 
-| 128 Latent Dimensions |
-| Reconstructed Samples | Generated Samples |
-| --------------------- | ----------------- |
-| ![][1] | ![][2] |
+## 128 Latent Dimensions
 
-| 256 Latent Dimensions |
 | Reconstructed Samples | Generated Samples |
 | --------------------- | ----------------- |
-| ![][3] | ![][4] |
+| ![][1]                | ![][2]            |
+
+## 256 Latent Dimensions
+
+| Reconstructed Samples | Generated Samples |
+| --------------------- | ----------------- |
+| ![][3]                | ![][4]            |
 
 [1]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Reconstructions/recons_epoch_20_128dims.png
 [2]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Samples/generated_samples_epoch_20_128dims.png
