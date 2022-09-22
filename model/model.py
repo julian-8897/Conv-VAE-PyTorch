@@ -13,7 +13,8 @@ class VanillaVAE(BaseModel):
                  hidden_dims: List[int] = None,
                  **kwargs) -> None:
         """Instantiates the VAE model
-        Args:
+
+        Params:
             in_channels (int): Number of input channels
             latent_dims (int): Size of latent dimensions
             hidden_dims (List[int]): List of hidden dimensions
@@ -79,7 +80,7 @@ class VanillaVAE(BaseModel):
         Encodes the input by passing through the convolutional network
         and outputs the latent variables.
 
-        Args:
+        Params:
             input (Tensor): Input tensor [N x C x H x W]
 
         Returns:
@@ -101,8 +102,8 @@ class VanillaVAE(BaseModel):
         Maps the given latent variables
         onto the image space.
 
-        Args:
-            z (Tensor) : Latent variable [B x D]
+        Params:
+            z (Tensor): Latent variable [B x D]
 
         Returns:
             result (Tensor) [B x C x H x W]
@@ -118,10 +119,14 @@ class VanillaVAE(BaseModel):
     def reparameterize(self, mu: Tensor, logvar: Tensor) -> Tensor:
         """
         Reparameterization trick to sample from N(mu, var) from
-        N(0,1).
-        :param mu: (Tensor) Mean of the latent Gaussian [B x D]
-        :param logvar: (Tensor) Standard deviation of the latent Gaussian [B x D]
-        :return: (Tensor) [B x D]
+        N(0,1)
+
+        Params:
+            mu (Tensor): Mean of Gaussian latent variables [B x D]
+            logvar (Tensor): log-Variance of Gaussian latent variables [B x D]
+
+        Returns: 
+            z (Tensor) [B x D]
         """
 
         std = torch.exp(0.5 * logvar)
@@ -142,9 +147,13 @@ class VanillaVAE(BaseModel):
         """
         Samples from the latent space and return the corresponding
         image space map.
-        :param num_samples: (Int) Number of samples
-        :param current_device: (Int) Device to run the model
-        :return: (Tensor)
+
+        Params:
+            num_samples (Int): Number of samples
+            current_device (Int): Device to run the model
+
+        Returns:
+            samples (Tensor)
         """
 
         z = torch.randn(num_samples,
@@ -157,8 +166,12 @@ class VanillaVAE(BaseModel):
     def generate(self, x: Tensor, **kwargs) -> Tensor:
         """
         Given an input image x, returns the reconstructed image
-        :param x: (Tensor) [B x C x H x W]
-        :return: (Tensor) [B x C x H x W]
+
+        Params:
+            x (Tensor): input image Tensor [B x C x H x W]
+
+        Returns:
+            (Tensor) [B x C x H x W]
         """
 
         return self.forward(x)[0]
