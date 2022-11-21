@@ -94,8 +94,9 @@ class VanillaVAE(BaseModel):
         # of the latent Gaussian distribution
         mu = self.fc_mu(result)
         log_var = self.fc_var(result)
+        z = self.reparameterize(mu, log_var)
 
-        return mu, log_var
+        return mu, log_var, z
 
     def decode(self, z: Tensor) -> Tensor:
         """
@@ -136,8 +137,7 @@ class VanillaVAE(BaseModel):
         return z
 
     def forward(self, input: Tensor, **kwargs) -> List[Tensor]:
-        mu, log_var = self.encode(input)
-        z = self.reparameterize(mu, log_var)
+        mu, log_var, z = self.encode(input)
 
         return self.decode(z), mu, log_var
 

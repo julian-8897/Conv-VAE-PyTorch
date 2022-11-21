@@ -11,6 +11,24 @@ import torchvision.utils as vutils
 from torchvision import transforms
 from torch.autograd import Variable
 import os
+import matplotlib.pyplot as plt
+
+
+def interpolate(autoencoder, x_1, x_2, n=12):
+    z_1 = autoencoder.encode(x_1)[2]
+    z_2 = autoencoder.encode(x_2)[2]
+    z = torch.stack([z_1 + (z_2 - z_1)*t for t in np.linspace(0, 1, n)])
+    interpolate_list = autoencoder.decode(z)
+    interpolate_list = interpolate_list.to('cpu').detach()
+    print(len(interpolate_list))
+
+    plt.figure(figsize=(64, 64))
+    for i in range(len(interpolate_list)):
+        ax = plt.subplot(1, len(interpolate_list), i+1)
+        plt.imshow(interpolate_list[i].permute(1, 2, 0).numpy())
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+    plt.savefig('linear_interpolation.png')
 
 
 def main(config):
@@ -89,6 +107,13 @@ def main(config):
                 nrow=6)
         except Warning:
             pass
+
+        # linear interpolation two chosen images
+        x_1 = test_input[1].to(device)
+        x_1 = torch.unsqueeze(x_1, dim=0)
+        x_2 = test_input[2].to(device)
+        x_2 = torch.unsqueeze(x_2, dim=0)
+        interpolate(model, x_1, x_2, n=5)
 
     n_samples = len(data_loader.sampler)
     log = {'loss': total_loss / n_samples}
