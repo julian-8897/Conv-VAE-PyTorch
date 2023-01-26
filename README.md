@@ -79,6 +79,10 @@ Generated plots are stored in the 'Reconstructions' and 'Samples' folders.
 | --------------------- | ----------------- |
 | ![][3]                | ![][4]            |
 
+## Interpolating Between Two Images
+
+| ![][4] |
+
 [1]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Reconstructions/recons_epoch_20_128dims.png
 [2]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Samples/generated_samples_epoch_20_128dims.png
 [3]: https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/Reconstructions/recons_epoch_20_256dims.png
