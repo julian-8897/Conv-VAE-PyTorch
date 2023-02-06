@@ -5,12 +5,89 @@ from torch.nn import functional as F
 from .types_ import *
 
 
+class PlanarFlow(nn.Module):
+    def __init__(self, dim):
+        """Instantiates one step of planar flow.
+        Args:
+            dim: input dimensionality.
+        """
+        super(PlanarFlow, self).__init__()
+
+        self.u = nn.Parameter(torch.randn(1, dim))
+        self.w = nn.Parameter(torch.randn(1, dim))
+        self.b = nn.Parameter(torch.randn(1))
+
+    def forward(self, x):
+        """Forward pass.
+        Args:
+            x: input tensor (B x D).
+        Returns:
+            transformed x and log-determinant of Jacobian.
+        """
+        def m(x):
+            return F.softplus(x) - 1.
+
+        def h(x):
+            return torch.tanh(x)
+
+        def h_prime(x):
+            return 1. - h(x)**2
+
+        inner = (self.w * self.u).sum()
+        u = self.u + (m(inner) - inner) * self.w / self.w.norm()**2
+        activation = (self.w * x).sum(dim=1, keepdim=True) + self.b
+        x = x + u * h(activation)
+        psi = h_prime(activation) * self.w
+        log_det = torch.log(torch.abs(1. + (u * psi).sum(dim=1, keepdim=True)))
+
+        return x, log_det
+
+
+class Flow(nn.Module):
+    def __init__(self, dim, type, length):
+        """Instantiates a chain of flows.
+        Args:
+            dim: input dimensionality.
+            type: type of flow.
+            length: length of flow.
+        """
+        super(Flow, self).__init__()
+
+        if type == 'planar':
+            self.flow = nn.ModuleList([PlanarFlow(dim) for _ in range(length)])
+        # elif type == 'radial':
+        #     self.flow = nn.ModuleList([RadialFlow(dim) for _ in range(length)])
+        # elif type == 'householder':
+        #     self.flow = nn.ModuleList([HouseholderFlow(dim) for _ in range(length)])
+        # elif type == 'nice':
+        #     self.flow = nn.ModuleList([NiceFlow(dim, i//2, i==(length-1)) for i in range(length)])
+        else:
+            self.flow = nn.ModuleList([])
+
+    def forward(self, x):
+        """Forward pass.
+        Args:
+            x: input tensor (B x D).
+        Returns:
+            transformed x and log-determinant of Jacobian.
+        """
+        [B, _] = list(x.size())
+        # log_det = torch.zeros(B, 1).cuda()
+        log_det = torch.zeros(B, 1)
+        for i in range(len(self.flow)):
+            x, inc = self.flow[i](x)
+            log_det = log_det + inc
+
+        return x, log_det
+
+
 class VanillaVAE(BaseModel):
 
     def __init__(self,
                  in_channels: int,
                  latent_dims: int,
                  hidden_dims: List[int] = None,
+                 flow=False,
                  **kwargs) -> None:
         """Instantiates the VAE model
 
@@ -21,6 +98,9 @@ class VanillaVAE(BaseModel):
         """
         super(VanillaVAE, self).__init__()
         self.latent_dim = latent_dims
+
+        if flow:
+            self.flow = Flow(self.latent_dim, 'planar', 16)
 
         modules = []
         if hidden_dims is None:
@@ -94,9 +174,9 @@ class VanillaVAE(BaseModel):
         # of the latent Gaussian distribution
         mu = self.fc_mu(result)
         log_var = self.fc_var(result)
-        z = self.reparameterize(mu, log_var)
+        z, log_det = self.reparameterize(mu, log_var)
 
-        return mu, log_var, z
+        return mu, log_var, z, log_det
 
     def decode(self, z: Tensor) -> Tensor:
         """
@@ -134,12 +214,12 @@ class VanillaVAE(BaseModel):
         eps = torch.randn_like(std)
         z = eps.mul(std).add_(mu)
 
-        return z
+        return self.flow(z)
 
     def forward(self, input: Tensor, **kwargs) -> List[Tensor]:
-        mu, log_var, z = self.encode(input)
+        mu, log_var, z, log_det = self.encode(input)
 
-        return self.decode(z), mu, log_var
+        return self.decode(z), mu, log_var, log_det
 
     def sample(self,
                num_samples: int,

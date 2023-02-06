@@ -51,8 +51,8 @@ class Trainer(BaseTrainer):
             data, target = data.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
-            output, mu, logvar = self.model(data)
-            loss = self.criterion(output, data, mu, logvar)
+            output, mu, logvar, log_det = self.model(data)
+            loss = self.criterion(output, data, mu, logvar, log_det)
             loss.backward()
 
             # optional gradient clipping
