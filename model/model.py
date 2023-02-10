@@ -87,7 +87,7 @@ class VanillaVAE(BaseModel):
                  in_channels: int,
                  latent_dims: int,
                  hidden_dims: List[int] = None,
-                 flow=False,
+                 flow_check=False,
                  **kwargs) -> None:
         """Instantiates the VAE model
 
@@ -98,8 +98,9 @@ class VanillaVAE(BaseModel):
         """
         super(VanillaVAE, self).__init__()
         self.latent_dim = latent_dims
+        self.flow_check = flow_check
 
-        if flow:
+        if self.flow_check:
             self.flow = Flow(self.latent_dim, 'planar', 16)
 
         modules = []
@@ -174,9 +175,14 @@ class VanillaVAE(BaseModel):
         # of the latent Gaussian distribution
         mu = self.fc_mu(result)
         log_var = self.fc_var(result)
-        z, log_det = self.reparameterize(mu, log_var)
 
-        return mu, log_var, z, log_det
+        if self.flow_check:
+            z, log_det = self.reparameterize(mu, log_var)
+            return mu, log_var, z, log_det
+
+        else:
+            z = self.reparameterize(mu, log_var)
+            return mu, log_var, z
 
     def decode(self, z: Tensor) -> Tensor:
         """
@@ -214,12 +220,23 @@ class VanillaVAE(BaseModel):
         eps = torch.randn_like(std)
         z = eps.mul(std).add_(mu)
 
-        return self.flow(z)
+        if self.flow_check:
+            return self.flow(z)
+
+        else:
+            return z
 
     def forward(self, input: Tensor, **kwargs) -> List[Tensor]:
-        mu, log_var, z, log_det = self.encode(input)
 
-        return self.decode(z), mu, log_var, log_det
+        if self.flow_check:
+            mu, log_var, z, log_det = self.encode(input)
+
+            return self.decode(z), mu, log_var, log_det
+
+        else:
+             mu, log_var, z = self.encode(input)
+
+             return self.decode(z), mu, log_var
 
     def sample(self,
                num_samples: int,
