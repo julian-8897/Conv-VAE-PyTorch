@@ -6,7 +6,7 @@
         "args": {
             "in_channels": 3,
             "latent_dims": 128,
-            "flow": true
+            "flow": false
         }
     },
     "data_loader": {
@@ -27,7 +27,7 @@
             "amsgrad": true
         }
     },
-    "loss": "elbo_loss_flow",
+    "loss": "elbo_loss",
     "metrics": [],
     "lr_scheduler": {
         "type": "StepLR",
