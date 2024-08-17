@@ -20,6 +20,11 @@ This implementation supports model training on the [CelebA dataset](http://mmlab
 
 The VAE model was evaluated on several downstream tasks, such as image reconstruction and image generation. Some sample results can be found in the [Results](https://github.com/julian-8897/Vanilla-VAE-PyTorch/blob/master/README.md#--Results) section.
 
+
+[![Sample Image](https://learnopencv.com/wp-content/uploads/2020/11/vae-diagram-1-2048x1126.jpg)](https://learnopencv.com/wp-content/uploads/2020/11/vae-diagram-1-2048x1126.jpg)
+*Figure 1: Visual Representation of VAE. Image source: [LearnOpenCV](https://learnopencv.com/wp-content/uploads/2020/11/vae-diagram-1-2048x1126.jpg)*
+
+
 ## Requirements
 
 - Python >= 3.9
