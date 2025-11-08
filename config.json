@@ -13,10 +13,11 @@
         "type": "CelebDataLoader",
         "args": {
             "data_dir": "data/",
-            "batch_size": 64,
+            "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.2,
-            "num_workers": 2
+            "num_workers": 4,
+            "pin_memory": true
         }
     },
     "optimizer": {

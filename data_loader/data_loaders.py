@@ -25,7 +25,7 @@ class CelebDataLoader(BaseDataLoader):
     https://s3-us-west-1.amazonaws.com/udacity-dlnfd/datasets/celeba.zip 
     """
 
-    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, image_size=64):
+    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, pin_memory=True, image_size=64):
         transform = transforms.Compose([
             transforms.Resize(image_size),
             transforms.CenterCrop(image_size),
@@ -34,4 +34,5 @@ class CelebDataLoader(BaseDataLoader):
         self.data_dir = data_dir
         self.dataset = datasets.ImageFolder(
             self.data_dir, transform=transform)
-        super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
+        super().__init__(self.dataset, batch_size, shuffle,
+                         validation_split, num_workers, pin_memory)

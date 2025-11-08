@@ -119,12 +119,20 @@ class VanillaVAE(BaseModel):
             in_channels = h_dim
 
         self.encoder = nn.Sequential(*modules)
+        # self.fc_1 = nn.Linear(
+        #     (hidden_dims[-1]*(64//2)*(64//2))//hidden_dims[-2], hidden_dims[-1]*4)
+        # self.fc_mu = nn.Linear(hidden_dims[-1]*4, latent_dims)
+        # self.fc_var = nn.Linear(hidden_dims[-1]*4, latent_dims)
+
         self.fc_mu = nn.Linear(hidden_dims[-1]*4, latent_dims)
         self.fc_var = nn.Linear(hidden_dims[-1]*4, latent_dims)
 
         # Build Decoder
         modules = []
-        self.decoder_input = nn.Linear(latent_dims, hidden_dims[-1] * 4)
+        # self.decoder_input = nn.Linear(latent_dims, hidden_dims[-1] * 4)
+        self.decoder_input = nn.Linear(latent_dims, hidden_dims[-1]*4)
+        # self.fc_2 = nn.Linear(
+        #     hidden_dims[-1]*4, hidden_dims[-1]*(64//2)*(64//2))
 
         hidden_dims.reverse()
 
@@ -170,6 +178,8 @@ class VanillaVAE(BaseModel):
 
         result = self.encoder(input)
         result = torch.flatten(result, start_dim=1)
+        # result = result.view(result.size(0), -1)
+        # result = F.relu(self.fc_1(result))
 
         # Split the result into mu and var components
         # of the latent Gaussian distribution
@@ -234,9 +244,9 @@ class VanillaVAE(BaseModel):
             return self.decode(z), mu, log_var, log_det
 
         else:
-             mu, log_var, z = self.encode(input)
+            mu, log_var, z = self.encode(input)
 
-             return self.decode(z), mu, log_var
+            return self.decode(z), mu, log_var
 
     def sample(self,
                num_samples: int,
